@@ -101,16 +101,23 @@ export function PropertyDetails({ property, children }: PropertyDetailsProps) {
               <div className="relative w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                 {/* Left Arrow */}
                 {property.images.length > 1 && (
-                  <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200 z-10"
+                  <div
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200 z-10 cursor-pointer"
                     onClick={() =>
                       setActiveImg((prev) => Math.max(0, prev - 1))
                     }
-                    disabled={activeImg === 0}
+                    role="button"
+                    tabIndex={0}
                     aria-label="Previous image"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveImg((prev) => Math.max(0, prev - 1));
+                      }
+                    }}
                   >
                     <span className="text-xl">&#8592;</span>
-                  </button>
+                  </div>
                 )}
                 <img
                   src={property.images[activeImg] || "/placeholder.png"}
@@ -119,31 +126,48 @@ export function PropertyDetails({ property, children }: PropertyDetailsProps) {
                 />
                 {/* Right Arrow */}
                 {property.images.length > 1 && (
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200 z-10"
+                  <div
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200 z-10 cursor-pointer"
                     onClick={() =>
                       setActiveImg((prev) =>
                         Math.min(property.images.length - 1, prev + 1)
                       )
                     }
-                    disabled={activeImg === property.images.length - 1}
+                    role="button"
+                    tabIndex={0}
                     aria-label="Next image"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveImg((prev) =>
+                          Math.min(property.images.length - 1, prev + 1)
+                        );
+                      }
+                    }}
                   >
                     <span className="text-xl">&#8594;</span>
-                  </button>
+                  </div>
                 )}
                 {property.images.length > 1 && (
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
                     {property.images.map((_, idx) => (
-                      <button
+                      <div
                         key={idx}
-                        className={`w-3 h-3 rounded-full border-2 ${
+                        className={`w-3 h-3 rounded-full border-2 cursor-pointer ${
                           activeImg === idx
                             ? "bg-primary border-primary"
                             : "bg-white border-gray-300"
                         }`}
                         onClick={() => setActiveImg(idx)}
+                        role="button"
+                        tabIndex={0}
                         aria-label={`Show image ${idx + 1}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setActiveImg(idx);
+                          }
+                        }}
                       />
                     ))}
                   </div>

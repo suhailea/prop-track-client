@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { useApi } from "@/hooks/useApi";
+import { useAminities } from "@/hooks/useAminities";
+import { Filter, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const propertyTypes = ["sale", "Studio", "Apartment", "Villa"];
@@ -23,33 +24,43 @@ export default function PropertyFilter({
   onChange,
   onReset,
 }: PropertyFilterProps) {
-  const { makeRequest, data } = useApi();
-  const [amenities, setAmenities] = useState([] as string[]);
-
+  const [localValues, setLocalValues] = useState<PropertyFilterValues>(values);
+  const { amenities } = useAminities();
+  // Update local values when props change
   useEffect(() => {
-    makeRequest(`/api/agent/properties/amenities`);
-  }, [makeRequest]);
-
-  useEffect(() => {
-    if (data) {
-      if (Array.isArray(data)) setAmenities(data || []);
-      else setAmenities([]);
-    }
-  }, [data]);
+    setLocalValues(values);
+  }, [values]);
 
   // Handlers
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    onChange({ ...values, [name]: value });
+    setLocalValues({ ...localValues, [name]: value });
   };
 
   const handleAmenityToggle = (amenity: string) => {
-    const newAmenities = values.amenities.includes(amenity)
-      ? values.amenities.filter((a) => a !== amenity)
-      : [...values.amenities, amenity];
-    onChange({ ...values, amenities: newAmenities });
+    const newAmenities = localValues.amenities.includes(amenity)
+      ? localValues.amenities.filter((a) => a !== amenity)
+      : [...localValues.amenities, amenity];
+    setLocalValues({ ...localValues, amenities: newAmenities });
+  };
+
+  const handleApplyFilter = () => {
+    onChange(localValues);
+  };
+
+  const handleReset = () => {
+    const resetValues = {
+      amenities: [],
+      bathrooms: "",
+      bedrooms: "",
+      minPrice: "",
+      maxPrice: "",
+      type: "",
+    };
+    setLocalValues(resetValues);
+    if (onReset) onReset();
   };
 
   return (
@@ -62,7 +73,7 @@ export default function PropertyFilter({
           </label>
           <select
             name="type"
-            value={values.type}
+            value={localValues.type}
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-base bg-white dark:bg-gray-800"
           >
@@ -82,7 +93,7 @@ export default function PropertyFilter({
           <input
             type="number"
             name="bedrooms"
-            value={values.bedrooms}
+            value={localValues.bedrooms}
             onChange={handleInputChange}
             placeholder="Any"
             min={0}
@@ -97,7 +108,7 @@ export default function PropertyFilter({
           <input
             type="number"
             name="bathrooms"
-            value={values.bathrooms}
+            value={localValues.bathrooms}
             onChange={handleInputChange}
             placeholder="Any"
             min={0}
@@ -112,7 +123,7 @@ export default function PropertyFilter({
           <input
             type="number"
             name="minPrice"
-            value={values.minPrice}
+            value={localValues.minPrice}
             onChange={handleInputChange}
             placeholder="0"
             min={0}
@@ -127,7 +138,7 @@ export default function PropertyFilter({
           <input
             type="number"
             name="maxPrice"
-            value={values.maxPrice}
+            value={localValues.maxPrice}
             onChange={handleInputChange}
             placeholder="Any"
             min={0}
@@ -141,28 +152,32 @@ export default function PropertyFilter({
           Amenities
         </label>
         <div className="flex flex-wrap gap-2">
-          {amenities.map((amenity) => (
-            <button
-              type="button"
-              key={amenity}
-              onClick={() => handleAmenityToggle(amenity)}
-              className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
-                values.amenities.includes(amenity)
-                  ? "bg-primary text-white border-primary"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700 hover:bg-primary/10"
-              }`}
-            >
-              {amenity}
-            </button>
-          ))}
+          {amenities &&
+            amenities.map((amenity) => (
+              <button
+                type="button"
+                key={amenity}
+                onClick={() => handleAmenityToggle(amenity)}
+                className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
+                  localValues.amenities.includes(amenity)
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700 hover:bg-primary/10"
+                }`}
+              >
+                {amenity}
+              </button>
+            ))}
         </div>
       </div>
       <div className="flex gap-2 justify-end">
-        {onReset && (
-          <Button type="button" variant="outline" onClick={onReset}>
-            Reset
-          </Button>
-        )}
+        <Button type="button" variant="outline" onClick={handleReset}>
+          <RotateCcw className="w-4 h-4" />
+          Reset
+        </Button>
+        <Button type="button" onClick={handleApplyFilter}>
+          <Filter className="w-4 h-4" />
+          Apply Filter
+        </Button>
       </div>
     </form>
   );

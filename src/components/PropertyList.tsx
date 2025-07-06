@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -8,10 +7,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useApi } from "@/hooks/useApi";
-import { Mail } from "lucide-react";
+import { Mail, Pen, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PropertyDetails } from "./PropertyDetails";
 import PropertyFilter, { type PropertyFilterValues } from "./PropertyFilter";
+import { Button } from "./ui/button";
+import CreateProperty from "./CreatePropert";
+import { useUser } from "@/hooks/useUser";
 
 const defaultFilter: PropertyFilterValues = {
   minPrice: "",
@@ -40,6 +42,11 @@ interface Property {
   location: PropertyLocation;
   type: string;
   amenities: string[];
+  areaSqFt: number;
+  bathrooms: number;
+  bedrooms: number;
+  createdAt: string;
+  description: string;
 }
 
 // Add interface for paginated response
@@ -49,12 +56,15 @@ interface PaginatedProperties {
 }
 
 export default function PropertyList() {
-  const { makeRequest, data } = useApi<Property[]>();
+  const { makeRequest, data, error } = useApi<Property[]>();
   const [properties, setProperties] = useState<Property[]>([]);
-  const [pageSize] = useState(15);
+  const [pageSize] = useState(9);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<PropertyFilterValues>(defaultFilter);
+  const [appliedFilter, setAppliedFilter] =
+    useState<PropertyFilterValues>(defaultFilter);
+  const user = useUser();
 
   useEffect(() => {
     makeRequest(`/api/agent/properties`, {
@@ -62,10 +72,10 @@ export default function PropertyList() {
       body: {
         page,
         pageSize,
-        filter,
+        filter: appliedFilter,
       },
     });
-  }, [makeRequest, page, pageSize, filter]);
+  }, [makeRequest, page, pageSize, appliedFilter]);
 
   useEffect(() => {
     if (data) {
@@ -81,17 +91,49 @@ export default function PropertyList() {
     }
   }, [data]);
 
-  const handleReset = () => setFilter(defaultFilter);
+  const archiveProperty = async (id: string) => {
+    await makeRequest(`/api/agent/properties/${id}/archive`, {
+      method: "PATCH",
+    });
+
+    if (!error) {
+      setProperties((prev) => prev.filter((property) => property.id !== id));
+    }
+  };
+
+  const handleReset = () => {
+    setFilter(defaultFilter);
+    setAppliedFilter(defaultFilter);
+  };
+
+  const handleApplyFilter = (newFilter: PropertyFilterValues) => {
+    setAppliedFilter(newFilter);
+    setPage(1); // Reset to first page when applying new filter
+  };
 
   return (
     <section className="w-full max-w-5xl  px-4 py-2">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-        Available Properties
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          Available Properties
+        </h2>
+        {user.role !== "client" && (
+          <CreateProperty>
+            <Button
+              variant="secondary"
+              className="hidden md:inline-flex"
+              onClick={handleReset}
+            >
+              <Plus className="w-4 h-4" />
+              Add Properties
+            </Button>
+          </CreateProperty>
+        )}
+      </div>
 
       <PropertyFilter
         values={filter}
-        onChange={setFilter}
+        onChange={handleApplyFilter}
         onReset={handleReset}
       />
       {properties.length === 0 ? (
@@ -104,9 +146,9 @@ export default function PropertyList() {
             {properties.map((property) => (
               <div
                 key={property.id}
-                className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden flex flex-col border border-gray-100 dark:border-gray-800 w-[270px] h-[420px]"
+                className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden flex flex-col border border-gray-100 dark:border-gray-800 w-[270px] h-[320px]"
               >
-                <div className="relative w-full h-[180px] bg-gray-100 flex items-center justify-center overflow-hidden rounded-t-lg">
+                <div className="relative w-full h-[140px] bg-gray-100 flex items-center justify-center overflow-hidden rounded-t-lg">
                   <img
                     src={property.images[0] || "/placeholder.png"}
                     alt={property.title}
@@ -115,13 +157,12 @@ export default function PropertyList() {
                   />
 
                   <PropertyDetails property={property}>
-                    <Button
-                      className="absolute top-2 right-2 z-10 px-3 py-1 text-xs rounded-md shadow bg-white/90 hover:bg-white"
-                      variant="secondary"
+                    <div
+                      className="absolute top-2 right-2 z-10 px-3 py-1 text-xs rounded-md shadow bg-white/90 hover:bg-white cursor-pointer inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9"
                       style={{ fontWeight: 600 }}
                     >
                       View Details
-                    </Button>
+                    </div>
                   </PropertyDetails>
                   <span
                     className={`absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded ${
@@ -133,9 +174,9 @@ export default function PropertyList() {
                     {property.type}
                   </span>
                 </div>
-                <div className="p-4 flex flex-col flex-1 gap-1">
+                <div className="p-3 flex flex-col flex-1">
                   <h3
-                    className="text-base font-semibold text-gray-900 dark:text-white mb-1 truncate"
+                    className="text-base font-semibold text-gray-900 dark:text-white truncate mb-1"
                     style={{
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -146,7 +187,7 @@ export default function PropertyList() {
                     {property.title}
                   </h3>
                   <div
-                    className="text-lg font-bold text-primary mb-0.5 truncate"
+                    className="text-lg font-bold text-primary truncate mb-1"
                     style={{
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -157,11 +198,12 @@ export default function PropertyList() {
                     {property.price}
                   </div>
                   <div
-                    className="text-xs text-gray-500 dark:text-gray-300 mb-1 truncate"
+                    className="text-xs text-gray-500 dark:text-gray-300 truncate mb-2"
                     style={{
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
+                      maxHeight: "24px",
                       maxWidth: "100%",
                     }}
                   >
@@ -169,8 +211,8 @@ export default function PropertyList() {
                     {property.location.state}, {property.location.country}
                   </div>
                   <div
-                    className="flex flex-wrap gap-1 mb-1"
-                    style={{ maxHeight: 32, overflow: "hidden" }}
+                    className="flex flex-wrap gap-1 mb-2"
+                    style={{ maxHeight: 24, overflow: "hidden" }}
                   >
                     {property.amenities.map((amenity, idx) => (
                       <span
@@ -188,15 +230,25 @@ export default function PropertyList() {
                     ))}
                   </div>
                 </div>
-                <PropertyDetails property={property}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="w-full mt-auto font-semibold flex items-center justify-center gap-2"
-                  >
-                    <Mail className="w-4 h-4" /> Inquiry
-                  </Button>
-                </PropertyDetails>
+                {user.role === "client" ? (
+                  <PropertyDetails property={property}>
+                    <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                      <Mail className="w-4 h-4" /> Inquiry
+                    </div>
+                  </PropertyDetails>
+                ) : (
+                  <div className="flex items-center space-x-1">
+                    <div
+                      className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                      onClick={() => archiveProperty(property.id)}
+                    >
+                      <Pen className="w-4 h-4" /> Archieve
+                    </div>
+                    <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                      <Pen className="w-4 h-4" /> Edit
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

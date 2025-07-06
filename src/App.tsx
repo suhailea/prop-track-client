@@ -7,6 +7,7 @@ import UpcomingSchedules from "./components/UpcomingSchedules";
 import { useUser } from "./hooks/useUser";
 import Rent from "./routes/Rent";
 import Sell from "./routes/Sell";
+import CreateProperty from "./components/CreatePropert";
 
 function App() {
   const user = useUser();
@@ -34,6 +35,7 @@ function App() {
                     <UpcomingSchedules />
                   </div>
                 </div>
+                <CreateProperty />
               </div>
             </>
           }

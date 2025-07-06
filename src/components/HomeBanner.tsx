@@ -1,81 +1,84 @@
-import { Button } from "@/components/ui/button"
-import { Home, Search } from "lucide-react"
-import { useState } from "react"
-
-const tabs = [
-  "Buy",
-  "Rent",
-  "Sell",
-  "Mortgage",
-  "My Home Value"
-]
+import { MapPin, Shield, Star, TrendingUp } from "lucide-react"
 
 export default function HomeBanner() {
-  const [activeTab, setActiveTab] = useState(0)
-
   return (
     <section
-      className="relative flex items-center min-h-[500px] w-full bg-cover bg-center"
+      className="relative flex items-center min-h-[600px] w-full bg-cover bg-center"
       style={{
         backgroundImage:
-          'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80)'
+          'url(https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1500&q=80)'
       }}
     >
       {/* Gradient and dark overlay for readability */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent" />
-      <div className="relative z-10 w-full flex flex-col items-center justify-center">
-        <div className="max-w-2xl w-full px-4 flex flex-col items-center text-center gap-4">
-          {/* Optional icon/illustration */}
-          <div className="flex justify-center mb-2">
-            <Home className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-white text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-lg">
-            Find the right home<br />at the right price
-          </h1>
-          {/* <p className="text-white/90 text-lg md:text-xl font-medium mb-2 drop-shadow">
-            Discover your dream home with the best deals, locations, and agents.
-          </p> */}
-        </div>
-        {/* Glassmorphism search card */}
-        <div className=" bg-white/70 mt-12 backdrop-blur-md rounded-xl shadow-2xl p-6 flex flex-col gap-1 w-full max-w-2xl animate-fade-in">
-          <div className="flex gap-1 mb-2">
-            {tabs.map((tab, idx) => (
-              <button
-                key={tab}
-                className={`px-4 py-2 rounded-t-md font-semibold text-base focus:outline-none transition-all duration-200 ${
-                  activeTab === idx
-                    ? "bg-white shadow text-black scale-105"
-                    : "bg-gray-100 text-gray-600 hover:bg-white/90 hover:text-black"
-                }`}
-                onClick={() => setActiveTab(idx)}
-                type="button"
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <form className="flex w-full">
-            <input
-              type="text"
-              placeholder="City, Address, School, Agent, ZIP"
-              className="flex-1 px-4 py-1 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary text-lg bg-white/80 placeholder-gray-500 transition-shadow duration-200 shadow-sm focus:shadow-lg"
-            />
-            <Button
-              type="submit"
-              className="rounded-l-none rounded-r-md px-6 flex items-center justify-center bg-red-500 hover:bg-red-600 transition-all duration-200 shadow-md"
-              size="lg"
-            >
-              <Search className="w-6 h-6 text-white" />
-            </Button>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-black/50" />
+      
+      <div className="relative z-10 w-full flex flex-col items-center justify-center px-4">
+        <div className="max-w-6xl w-full flex flex-col items-center text-center gap-8">
           
-          </form>
+          {/* Main Content */}
+          <div className="flex flex-col items-center gap-6">
+            {/* Main Heading */}
+            <h1 className="text-white text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight drop-shadow-lg">
+              Find Your Dream Home
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-white/90 text-xl md:text-2xl font-medium mb-6 drop-shadow max-w-3xl">
+              Discover the perfect property with our expert agents and comprehensive listings
+            </p>
+          </div>
+          
+          {/* Features Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="bg-blue-500/20 p-3 rounded-full w-fit mx-auto mb-4">
+                <TrendingUp className="w-6 h-6 text-blue-300" />
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Best Deals</h3>
+              <p className="text-white/80 text-sm">Get the best prices and exclusive offers on premium properties</p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="bg-green-500/20 p-3 rounded-full w-fit mx-auto mb-4">
+                <Shield className="w-6 h-6 text-green-300" />
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Trusted Agents</h3>
+              <p className="text-white/80 text-sm">Work with verified and experienced real estate professionals</p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="bg-purple-500/20 p-3 rounded-full w-fit mx-auto mb-4">
+                <MapPin className="w-6 h-6 text-purple-300" />
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Prime Locations</h3>
+              <p className="text-white/80 text-sm">Properties in the most desirable neighborhoods and areas</p>
+            </div>
+          </div>
+          
+          {/* Stats Section */}
+          <div className="flex flex-wrap justify-center gap-8 mt-8">
+            <div className="text-center">
+              <div className="text-white text-3xl font-bold">500+</div>
+              <div className="text-white/70 text-sm">Properties Listed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-white text-3xl font-bold">50+</div>
+              <div className="text-white/70 text-sm">Expert Agents</div>
+            </div>
+            <div className="text-center">
+              <div className="text-white text-3xl font-bold">1000+</div>
+              <div className="text-white/70 text-sm">Happy Clients</div>
+            </div>
+            <div className="text-center">
+              <div className="text-white text-3xl font-bold">4.9</div>
+              <div className="text-white/70 text-sm flex items-center justify-center gap-1">
+                <Star className="w-4 h-4 text-yellow-400" />
+                Rating
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   )
 }
-
-// Optional: Add fade-in animation
-// In your index.css or a global CSS file, add:
-// @keyframes fade-in { from { opacity: 0; transform: translateY(24px);} to { opacity: 1; transform: none; } }
-// .animate-fade-in { animation: fade-in 0.8s cubic-bezier(.4,0,.2,1) both; }
