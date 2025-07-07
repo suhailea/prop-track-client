@@ -1,4 +1,3 @@
-import Navbar from "@/components/layouts/Navbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import HomeBanner from "./components/HomeBanner";
@@ -7,14 +6,12 @@ import UpcomingSchedules from "./components/UpcomingSchedules";
 import { useUser } from "./hooks/useUser";
 import Rent from "./routes/Rent";
 import Sell from "./routes/Sell";
-import CreateProperty from "./components/CreatePropert";
 
 function App() {
   const user = useUser();
 
   return (
     <BrowserRouter>
-      <Navbar role={user.role} />
       <Routes>
         <Route
           path="/"
@@ -35,7 +32,6 @@ function App() {
                     <UpcomingSchedules />
                   </div>
                 </div>
-                <CreateProperty />
               </div>
             </>
           }

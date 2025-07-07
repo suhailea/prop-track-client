@@ -7,13 +7,14 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useApi } from "@/hooks/useApi";
-import { Mail, Pen, Plus } from "lucide-react";
+import { Archive, Mail, Pen, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PropertyDetails } from "./PropertyDetails";
 import PropertyFilter, { type PropertyFilterValues } from "./PropertyFilter";
 import { Button } from "./ui/button";
 import CreateProperty from "./CreatePropert";
 import { useUser } from "@/hooks/useUser";
+import { ConfirmButton } from "./ui/conformation-button";
 
 const defaultFilter: PropertyFilterValues = {
   minPrice: "",
@@ -143,7 +144,7 @@ export default function PropertyList() {
       ) : (
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
-            {properties.map((property) => (
+            {properties.map((property: Property) => (
               <div
                 key={property.id}
                 className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden flex flex-col border border-gray-100 dark:border-gray-800 w-[270px] h-[320px]"
@@ -238,15 +239,20 @@ export default function PropertyList() {
                   </PropertyDetails>
                 ) : (
                   <div className="flex items-center space-x-1">
-                    <div
-                      className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                      onClick={() => archiveProperty(property.id)}
+                    <ConfirmButton
+                      onConfirm={() => archiveProperty(property.id)}
+                      title="Archive Property"
+                      description="Are you sure you want to archive this property?"
                     >
-                      <Pen className="w-4 h-4" /> Archieve
-                    </div>
-                    <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                      <Pen className="w-4 h-4" /> Edit
-                    </div>
+                      <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                        <Archive className="w-4 h-4" /> Archieve
+                      </div>
+                    </ConfirmButton>
+                    <CreateProperty data={property}>
+                      <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                        <Pen className="w-4 h-4" /> Edit
+                      </div>
+                    </CreateProperty>
                   </div>
                 )}
               </div>

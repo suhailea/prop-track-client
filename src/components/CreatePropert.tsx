@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "./ui/button";
@@ -36,6 +36,7 @@ import { useApi } from "@/hooks/useApi";
 
 // Validation schema for the property form
 const propertyFormSchema = z.object({
+  id: z.string().optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   price: z.number().min(1, "Price must be greater than 0"),
@@ -52,12 +53,10 @@ const propertyFormSchema = z.object({
     state: z.string().min(1, "State is required"),
     country: z.string().min(1, "Country is required"),
     coordinates: z.object({
-      latitude: z.number().min(-90).max(90),
-      longitude: z.number().min(-180).max(180),
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
     }),
   }),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
 });
 
 type PropertyFormValues = z.infer<typeof propertyFormSchema>;
@@ -82,19 +81,22 @@ const propertyStatuses = [
   "Rented",
   "Under Contract",
   "Pending",
+  "Archived",
+  "Available",
 ];
 
 export default function CreateProperty({
   children,
+  data,
 }: {
   children: React.ReactNode;
+  data: Partial<PropertyFormValues>;
 }) {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<PropertyFormValues>>({});
   const { amenities } = useAminities();
   const { makeRequest, loading: submitLoading, error } = useApi();
-
   const form = useForm<PropertyFormValues>({
     resolver: zodResolver(propertyFormSchema),
     defaultValues: {
@@ -114,47 +116,73 @@ export default function CreateProperty({
         state: "",
         country: "",
         coordinates: {
-          latitude: 0,
-          longitude: 0,
+          lat: 0,
+          lng: 0,
         },
       },
-      createdAt: new Date(),
-      updatedAt: new Date(),
     },
   });
 
-  const onSubmit = async (data: PropertyFormValues) => {
-    console.log("Form Data:", data);
+  console.log("🔄 Initial form values:", data);
+  useEffect(() => {
+    if (data && Object.keys(data).length > 0) {
+      // 1. This correctly resets the entire form
+      form.reset(data);
+      console.log("🔄 Resetting form with data:", data);
+      // 2. Sync the local state for the amenity checkboxes
+      if (data.amenities && Array.isArray(data.amenities)) {
+        console.log("🔄 Resetting form with data:", selectedAmenities);
+
+        // This correctly schedules the state update.
+        // The new value will be available on the next render.
+        setSelectedAmenities(data.amenities);
+      }
+    }
+  }, [data, form.reset]);
+
+  // Add this temporarily to your component for debugging.
+  // It will run whenever `selectedAmenities` actually changes.
+  useEffect(() => {
+    console.log("✅ Amenities state has been updated:", selectedAmenities);
+  }, [selectedAmenities]);
+
+  const onSubmit = async (payload: PropertyFormValues) => {
+    console.log("Form Data:", payload);
 
     try {
       // Prepare the data according to the model structure
       const propertyData = {
-        title: data.title,
-        description: data.description,
-        price: data.price,
-        type: data.type,
-        status: data.status,
-        bedrooms: data.bedrooms,
-        bathrooms: data.bathrooms,
-        areaSqFt: data.areaSqFt,
-        amenities: data.amenities,
-        images: data.images || null,
+        title: payload.title,
+        description: payload.description,
+        price: payload.price,
+        type: payload.type,
+        status: payload.status,
+        bedrooms: payload.bedrooms,
+        bathrooms: payload.bathrooms,
+        areaSqFt: payload.areaSqFt,
+        amenities: payload.amenities,
+        images: payload.images || null,
         location: {
-          address: data.location.address,
-          city: data.location.city,
-          state: data.location.state,
-          country: data.location.country,
+          address: payload.location.address,
+          city: payload.location.city,
+          state: payload.location.state,
+          country: payload.location.country,
           coordinates: {
-            lat: data.location.coordinates.latitude,
-            lng: data.location.coordinates.longitude,
+            lat: payload.location.coordinates.lat,
+            lng: payload.location.coordinates.lng,
           },
         },
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+      console.log("Prepared Property Data:", propertyData);
+      const url =
+        data && Object.keys(data).length > 0
+          ? `/api/agent/properties/${data.id}`
+          : "/api/agent/create-property";
 
-      await makeRequest("/api/agent/create-property", {
-        method: "POST",
+      await makeRequest(url, {
+        method: data && Object.keys(data).length > 0 ? "PUT" : "POST",
         body: propertyData,
       });
 
@@ -165,8 +193,6 @@ export default function CreateProperty({
         setSelectedAmenities([]);
         setFormData({});
       }
-      // You can add a success notification here
-      alert("Property created successfully!");
     } catch (error) {
       console.error("Error creating property:", error);
       alert("Failed to create property. Please try again.");
@@ -528,7 +554,7 @@ export default function CreateProperty({
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="location.coordinates.latitude"
+            name="location.coordinates.lat"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Latitude</FormLabel>
@@ -548,7 +574,7 @@ export default function CreateProperty({
 
           <FormField
             control={form.control}
-            name="location.coordinates.longitude"
+            name="location.coordinates.lng"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Longitude</FormLabel>
@@ -640,11 +666,16 @@ export default function CreateProperty({
 
   return (
     <Sheet
-      onOpenChange={() => {
-        setCurrentStep(1);
-        form.reset();
-        setSelectedAmenities([]);
-        setFormData({});
+      onOpenChange={(isOpen) => {
+        // ONLY reset the form when the sheet is closing.
+        if (!isOpen) {
+          setCurrentStep(1);
+          form.reset(); // Reset to default empty values
+          setSelectedAmenities([]);
+          setFormData({});
+        }
+        // When the sheet is opening (isOpen === true), do nothing.
+        // Let the useEffect handle populating the form with the 'data' prop.
       }}
     >
       <SheetTrigger>{children}</SheetTrigger>

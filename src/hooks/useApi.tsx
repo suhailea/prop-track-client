@@ -26,7 +26,6 @@ export function useApi<T = unknown>(): UseApiResult<T> {
       setData(null);
       try {
         const { method = "GET", headers = {}, body, skip = false } = options;
-        console.log(method, headers, body, typeof body);
         if (skip) {
           setLoading(false);
           return;
@@ -42,7 +41,6 @@ export function useApi<T = unknown>(): UseApiResult<T> {
           fetchOptions.body =
             typeof body === "string" ? body : JSON.stringify(body);
         }
-        console.log("HERE", fetchOptions);
         const response = await fetch(
           `http://localhost:3000${url}`,
           fetchOptions
