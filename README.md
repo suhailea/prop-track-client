@@ -67,6 +67,16 @@ To test the application with different user roles (admin, agent, or client), you
    ```
 4. Save the file. The application will now behave according to the selected user role.
 
+## Demo Screenshots
+
+Below are some screenshots demonstrating the application UI:
+
+![Dashboard](./Screenshot%202025-07-07%20at%2010.46.31%E2%80%AFAM.png)
+![Property List](./Screenshot%202025-07-07%20at%2010.46.36%E2%80%AFAM.png)
+![Home Banner](./Screenshot%202025-07-07%20at%2010.47.15%E2%80%AFAM.png)
+![Rent Page](./Screenshot%202025-07-07%20at%2010.47.28%E2%80%AFAM.png)
+![Sell Page](./Screenshot%202025-07-07%20at%2010.47.42%E2%80%AFAM.png)
+
 ---
 
 # React + TypeScript + Vite

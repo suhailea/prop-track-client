@@ -3,13 +3,10 @@ import Dashboard from "./components/Dashboard";
 import HomeBanner from "./components/HomeBanner";
 import PropertyList from "./components/PropertyList";
 import UpcomingSchedules from "./components/UpcomingSchedules";
-import { useUser } from "./hooks/useUser";
 import Rent from "./routes/Rent";
 import Sell from "./routes/Sell";
 
 function App() {
-  const user = useUser();
-
   return (
     <BrowserRouter>
       <Routes>
@@ -17,11 +14,7 @@ function App() {
           path="/"
           element={
             <>
-              {user.role === "admin" || user.role === "agent" ? (
-                <Dashboard />
-              ) : (
-                <HomeBanner />
-              )}
+              <HomeBanner />
 
               <div className="w-full px-4">
                 <div className="max-w-7xl mx-auto flex justify-between gap-4 items-start w-full p-5">
