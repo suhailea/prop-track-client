@@ -1,75 +1,65 @@
-# Property Management Assessment
+PropTrack Client
 
-This project is a Property Management web application built as part of an assessment. It allows users to view, filter, and manage property listings, as well as see upcoming schedules and offers. The application is built using React, TypeScript, and Vite for a fast and modern development experience.
+A modern property management frontend built with React, TypeScript, and Vite. This application allows users to view, filter, and manage property listings based on their roles (Admin, Agent, or Client).
 
-## Features
-- Home banner for regular users
-- Property listing with filtering options
-- View property details and upcoming schedules
-- Separate routes for renting and selling properties
+🔍 Features
 
-## Technologies Used
-- React
-- TypeScript
-- Vite
-- React Router
+🏠 Home banner for general users
+🏘️ Property listings with dynamic filtering
+🗕️ View property details and upcoming schedules
+🔀 Dedicated pages for Rent and Sell categories
+👤 Role-based experience (Admin, Agent, Client)
 
-## Getting Started
 
-### Prerequisites
-- Node.js (v16 or higher recommended)
-- npm (comes with Node.js)
+⚙️ Tech Stack
+React + TypeScript
+Vite
+React Router DOM
+Tailwind CSS
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd prop-track-client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
 
-### Running the Application
-To start the development server, run:
-```bash
+🚀 Getting Started
+
+Prerequisites
+Node.js (v16 or higher recommended)
+npm
+
+
+Installation
+
+git clone <repo-url>
+cd prop-track-client
+npm install
+
+
+Running the App
+
 npm run dev
-```
-This will start the app at [http://localhost:5173](http://localhost:5173) (or another available port).
-
-### Building for Production
-To build the app for production, run:
-```bash
+Access the app at: http://localhost:5173
+Building for Production
 npm run build
-```
 
-## Project Structure
-- `src/components/` - UI components and layouts
-- `src/routes/` - Route components for different pages
-- `src/hooks/` - Custom React hooks
-- `src/lib/` - Utility functions
-- `src/styles/` - CSS styles
+🗂️ Project Structure
 
-## Notes
-- This project is for assessment purposes and may not include full backend integration or authentication.
+src/
+🍜 components/     # Reusable UI components
+🍜 routes/         # Page-level routes
+🍜 hooks/          # Custom hooks
+🍜 lib/            # Utility functions
+🍜 styles/         # CSS/Tailwind styles
 
-## Switching User Role
+👥 Switching User Roles
 
-To test the application with different user roles (admin, agent, or client), you can manually change the mock user role:
+To test different user roles:
+Open src/hooks/useUser.tsx
+Find the mockUser object
+Change the role value to "admin", "agent", or "client"
 
-1. Open the file: `src/hooks/useUser.tsx`
-2. Find the `mockUser` object.
-3. Change the `role` property to one of the following: `"admin"`, `"agent"`, or `"client"`.
-   For example, to switch to client:
-   ```ts
-   role: "client",
-   ```
-4. Save the file. The application will now behave according to the selected user role.
 
-## Demo Screenshots
+Example:
+role: "client",
 
-Below are some screenshots demonstrating the application UI:
+🗼️ Screenshots
 
 ![Dashboard](./Screenshot%202025-07-07%20at%2010.46.31%E2%80%AFAM.png)
 ![Property List](./Screenshot%202025-07-07%20at%2010.46.36%E2%80%AFAM.png)
@@ -77,8 +67,39 @@ Below are some screenshots demonstrating the application UI:
 ![Rent Page](./Screenshot%202025-07-07%20at%2010.47.28%E2%80%AFAM.png)
 ![Sell Page](./Screenshot%202025-07-07%20at%2010.47.42%E2%80%AFAM.png)
 
----
 
-# React + TypeScript + Vite
+📝 Assumptions
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+No authentication was required as part of the task
+User roles are manually switched for testing
+Backend APIs are assumed to be locally available
+
+
+⚒️ Technical Decisions
+
+React + Vite: Fast build time and modern tooling
+TypeScript: Safer code and better DX
+React Router: For SPA-style navigation
+
+
+🌱 Future Enhancements
+Add proper authentication (JWT/session)
+Dark mode toggle
+Mobile responsiveness improvements
+
+
+⏱️ Time Spent
+~8–10 hours
+
+
+🧰 Tools Used
+
+Cursor
+Git + GitHub
+Postman (API testing)
+Chrome DevTools
+
+
+📌 Notes
+
+This project is part of an assessment and is not intended for production use. Please refer to the backend repo for API details.
