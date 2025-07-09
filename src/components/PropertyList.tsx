@@ -7,14 +7,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useApi } from "@/hooks/useApi";
-import { Archive, Mail, Pen, Plus } from "lucide-react";
+import { useUser } from "@/hooks/useUser";
+import { Archive, Mail, Pen } from "lucide-react";
 import { useEffect, useState } from "react";
+import CreateProperty from "./CreatePropert";
+import PropertyLayout from "./layouts/PropertyLayout";
 import { PropertyDetails } from "./PropertyDetails";
 import PropertyFilter, { type PropertyFilterValues } from "./PropertyFilter";
-import { Button } from "./ui/button";
-import CreateProperty from "./CreatePropert";
-import { useUser } from "@/hooks/useUser";
 import { ConfirmButton } from "./ui/conformation-button";
+import LeafletMap from "./Map";
 
 const defaultFilter: PropertyFilterValues = {
   minPrice: "",
@@ -56,7 +57,7 @@ interface PaginatedProperties {
   total: number;
 }
 
-export default function PropertyList() {
+export default function PropertyList({ showLayout = true }) {
   const { makeRequest, data, error } = useApi<Property[]>();
   const [properties, setProperties] = useState<Property[]>([]);
   const [pageSize] = useState(9);
@@ -113,37 +114,25 @@ export default function PropertyList() {
   };
 
   return (
-    <section className="w-full max-w-5xl  px-4 py-2">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-          Available Properties
-        </h2>
-        {user.role !== "client" && (
-          <CreateProperty>
-            <Button
-              variant="secondary"
-              className="hidden md:inline-flex"
-              onClick={handleReset}
-            >
-              <Plus className="w-4 h-4" />
-              Add Properties
-            </Button>
-          </CreateProperty>
-        )}
-      </div>
-
-      <PropertyFilter
-        values={filter}
-        onChange={handleApplyFilter}
-        onReset={handleReset}
-      />
+    <HandleLayout showLayout={showLayout} handleReset={handleReset}>
+      {showLayout && (
+        <PropertyFilter
+          values={filter}
+          onChange={handleApplyFilter}
+          onReset={handleReset}
+        />
+      )}
       {properties.length === 0 ? (
         <div className="text-center text-gray-500 dark:text-gray-300 py-12">
           No properties found matching your criteria.
         </div>
       ) : (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
+          <div
+            className={`grid gap-6 md:grid-cols-2 ${
+              showLayout ? "lg:grid-cols-4" : "lg:grid-cols-2"
+            } justify-items-center`}
+          >
             {properties.map((property: Property) => (
               <div
                 key={property.id}
@@ -248,7 +237,7 @@ export default function PropertyList() {
                         <Archive className="w-4 h-4" /> Archieve
                       </div>
                     </ConfirmButton>
-                    <CreateProperty data={property}>
+                    <CreateProperty data={property || null}>
                       <div className="w-full font-semibold flex items-center justify-center gap-2 cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                         <Pen className="w-4 h-4" /> Edit
                       </div>
@@ -303,6 +292,26 @@ export default function PropertyList() {
           </Pagination>
         </>
       )}
-    </section>
+    </HandleLayout>
   );
 }
+
+interface HandleLayoutProps {
+  children: React.ReactNode;
+  showLayout: boolean;
+  handleReset: () => void;
+}
+
+const HandleLayout: React.FC<HandleLayoutProps> = ({
+  children,
+  showLayout,
+  handleReset,
+}) => {
+  if (showLayout) {
+    return (
+      <PropertyLayout handleReset={handleReset}>{children}</PropertyLayout>
+    );
+  } else {
+    return <>{children}</>;
+  }
+};

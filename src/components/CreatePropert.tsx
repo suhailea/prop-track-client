@@ -90,7 +90,7 @@ export default function CreateProperty({
   data,
 }: {
   children: React.ReactNode;
-  data: Partial<PropertyFormValues>;
+  data: Partial<PropertyFormValues> | null;
 }) {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(1);

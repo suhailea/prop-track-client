@@ -1,38 +1,23 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
-import HomeBanner from "./components/HomeBanner";
+import Dashboard from "./components/dashboard/Dashboard";
+import Layout from "./components/layouts/AppLayout";
+import { Clients } from "./routes/Clients";
 import PropertyList from "./components/PropertyList";
-import UpcomingSchedules from "./components/UpcomingSchedules";
-import Rent from "./routes/Rent";
-import Sell from "./routes/Sell";
+import Schedules from "./components/schedules/Schedules";
+import PropertySearch from "./components/PropertySearch";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <HomeBanner />
-
-              <div className="w-full px-4">
-                <div className="max-w-7xl mx-auto flex justify-between gap-4 items-start w-full p-5">
-                  <div className="basis-[70%] max-w-[70%]">
-                    <PropertyList />
-                  </div>
-                  <div className="basis-[30%] max-w-[30%] ml-3">
-                    <UpcomingSchedules />
-                  </div>
-                </div>
-              </div>
-            </>
-          }
-        />
-        <Route path="/rent" element={<Rent />} />
-        <Route path="/sell" element={<Sell />} />
-        <Route path="/admin" element={<Dashboard />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/clients" element={<Clients />} />
+          <Route path="/properties" element={<PropertyList />} />
+          <Route path="/schedules" element={<Schedules />} />
+          <Route path="/find-property" element={<PropertySearch />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
